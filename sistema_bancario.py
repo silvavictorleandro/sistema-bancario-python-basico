@@ -62,6 +62,50 @@ def exibir_extratos(saldo, /, *, extrato):
     print("=============================")
 
 
+def criar_usuario(usuarios):
+    cpf = input("Informe o CPF (somente números): ")
+    usuario = filtrar_usuario(cpf, usuarios)
+
+    if usuario:
+        print("\n@@@ Esse usuário já está cadastrado! @@@")
+        return
+    
+    nome = input("Informe o nome completo: ")
+    data_nascimento = input("Informa a data de nascimento (dd-mm-aaaa): ")
+    endereco = input("Informe o endereço (logradouro, número - bairro - cidade/UF): ")
+
+    usuarios.append({"nome": nome, "data_nascimento": data_nascimento, "cpf": cpf, "endereco": endereco})
+
+    print("=== Usuário cadastrado com sucesso ===")
+
+
+def filtrar_usuario(cpf, usuarios):
+    usuario_filtrado = [usuario for usuario in usuarios if usuario["cpf"] == cpf]
+    return usuario_filtrado[0] if usuario_filtrado else None
+
+
+def criar_conta(agencia, numero_conta, usuarios):
+    cpf = input("Informe o cpf do usuário: ")
+    usuario = filtrar_usuario(cpf, usuarios)
+
+    if usuario:
+        print("=== Conta criada com sucesso! ===")
+        return {"agencia": agencia, "numero_conta": numero_conta, "usuario": usuario}
+
+    print("@@@ Usuário não encontrado! Tente novamente. @@@")
+
+
+def listar_contas(contas):
+    for conta in contas:
+        linha = f"""\
+            Agência:\t{conta["agencia"]}
+            C/C:\t\t{conta["numero_conta"]}
+            Titular:\t{conta["usuario"]["nome"]}
+        """
+        print("=" * 30)
+        print(textwrap.dedent(linha))
+
+
 def main():
     LIMITE_QUANTIDADE_SAQUES = 3
     AGENCIA = "0001"
@@ -96,6 +140,19 @@ def main():
 
         elif pergunta_inicial == "3":
             exibir_extratos(saldo, extrato=extrato)
+
+        elif pergunta_inicial == "4":
+            criar_usuario(usuarios)
+
+        elif pergunta_inicial == "5":
+            numero_conta += 1
+            conta = criar_conta(AGENCIA, numero_conta, usuarios)
+
+            if conta:
+                contas.append(conta)
+
+        elif pergunta_inicial == "6":
+            listar_contas(contas)
 
         elif pergunta_inicial == "0":
             print("\nAgradecemos o contato!")
